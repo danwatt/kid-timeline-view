@@ -335,7 +335,7 @@ function renderTimeline(kids, parents = []) {
   currentKids = kids;
   currentParents = parents;
   const groups = new DataSet([
-    ...parents.map((p, i) => ({ id: `parent-${i}`, content: p.name })),
+    ...parents.map((p, i) => ({ id: `parent-${i}`, content: p.name, className: 'lane-parent' })),
     ...kids.map((kid, i) => ({ id: i, content: kid.name })),
     { id: DRIVE_GROUP, content: 'Driving to school' },
     { id: INSURE_GROUP, content: 'Insured drivers' },

@@ -177,3 +177,9 @@ button:hover { background: #2559c9; }
   display: flex;
   align-items: center;
 }
+/* Parent lanes only carry point markers — keep them shorter than kid lanes */
+.vis-foreground .vis-group.lane-parent,
+.vis-labelset .vis-label.lane-parent {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
