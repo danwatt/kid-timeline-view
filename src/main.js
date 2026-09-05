@@ -187,28 +187,42 @@ resetBtn.addEventListener('click', () => {
   setupSection.classList.remove('hidden');
 });
 
-function schoolSessions(minDate, maxDate, enrollWindows) {
-  // Emit a background item only for school years where a kid is enrolled in K-12
+function schoolSessions(minDate, maxDate, driveData) {
+  // One background band per school year a kid is enrolled in K-12, sliced so the
+  // stretches where a parent must drive get their own class (no overlapping items).
+  const driving = parentDrivingIntervals(driveData, minDate, maxDate).map((s) => [+s.start, +s.end]);
   const items = [];
   const firstYear = minDate.getFullYear() - 1;
   const lastYear = maxDate.getFullYear() + 1;
   for (let y = firstYear; y <= lastYear; y++) {
-    const start = new Date(y, SCHOOL_START.month, SCHOOL_START.day);
-    const end = new Date(y + 1, SCHOOL_END.month, SCHOOL_END.day);
-    const anyEnrolled = enrollWindows.some((w) => w.enroll < end && w.grad > start);
+    const start = +new Date(y, SCHOOL_START.month, SCHOOL_START.day);
+    const end = +new Date(y + 1, SCHOOL_END.month, SCHOOL_END.day);
+    const anyEnrolled = driveData.some((w) => +w.enroll < end && +w.grad > start);
     if (!anyEnrolled) continue;
-    items.push({
-      start,
-      end,
-      type: 'background',
-      className: 'school-session',
-      content: '',
+
+    const cuts = new Set([start, end]);
+    driving.forEach(([ds, de]) => {
+      if (ds > start && ds < end) cuts.add(ds);
+      if (de > start && de < end) cuts.add(de);
     });
+    const pts = [...cuts].sort((a, b) => a - b);
+    for (let i = 0; i < pts.length - 1; i++) {
+      const s = pts[i];
+      const e = pts[i + 1];
+      const mid = (s + e) / 2;
+      const isDriving = driving.some(([ds, de]) => ds <= mid && mid < de);
+      items.push({
+        start: new Date(s),
+        end: new Date(e),
+        type: 'background',
+        className: isDriving ? 'school-session parent-driving' : 'school-session',
+        content: '',
+        title: isDriving ? 'No child old enough — parent must drive to school' : undefined,
+      });
+    }
   }
   return items;
 }
-
-const DRIVE_GROUP = 'drive';
 
 // Is the date within a school session (mid-Aug to mid-May)? Summer = not in session.
 function inSchoolSession(date) {
@@ -219,10 +233,10 @@ function inSchoolSession(date) {
   return afterStart || beforeEnd;
 }
 
-// Build the bottom lane: emit "Parent driver" ranges only during school sessions when a
-// ride is needed and no child is old enough. Gaps imply a kid can drive.
-function addDriveLane(items, driveData, itemId, minDate, maxDate) {
-  if (driveData.length === 0) return itemId;
+// Merged date ranges (during school sessions) where a ride is needed and no child
+// is old enough to drive — i.e. a parent must drive to school.
+function parentDrivingIntervals(driveData, minDate, maxDate) {
+  if (driveData.length === 0) return [];
 
   const bounds = new Set();
   driveData.forEach((d) => {
@@ -254,20 +268,7 @@ function addDriveLane(items, driveData, itemId, minDate, maxDate) {
     }
   }
 
-  segments.forEach((seg) => {
-    items.add({
-      id: itemId++,
-      group: DRIVE_GROUP,
-      start: new Date(seg.start),
-      end: new Date(seg.end),
-      type: 'range',
-      content: 'Parent driver',
-      className: 'drive-parent',
-      title: 'No child old enough — parent must drive to school',
-    });
-  });
-
-  return itemId;
+  return segments.map((seg) => ({ start: new Date(seg.start), end: new Date(seg.end) }));
 }
 
 const INSURE_GROUP = 'insure';
@@ -337,7 +338,6 @@ function renderTimeline(kids, parents = []) {
   const groups = new DataSet([
     ...parents.map((p, i) => ({ id: `parent-${i}`, content: p.name, className: 'lane-parent' })),
     ...kids.map((kid, i) => ({ id: i, content: kid.name })),
-    { id: DRIVE_GROUP, content: 'Driving to school' },
     { id: INSURE_GROUP, content: 'Insured drivers' },
   ]);
 
@@ -429,11 +429,10 @@ function renderTimeline(kids, parents = []) {
     }
   });
 
-  // School-in-session background bands (span all groups)
+  // School-in-session background bands (span all groups); stretches where a parent
+  // must drive to school are recolored via the `parent-driving` class.
   schoolSessions(minDate, maxDate, driveData).forEach((s) => items.add({ id: itemId++, ...s }));
 
-  // Bottom "Driving to school" lane
-  itemId = addDriveLane(items, driveData, itemId, minDate, maxDate);
   itemId = addInsuranceLane(items, kids, itemId, minDate, maxDate);
 
   // Parent retirement (age 65) markers
@@ -493,7 +492,7 @@ function buildLegend() {
   legendEl.innerHTML =
     AGE_BANDS.map(([, , label, cls]) => `<span class="legend-item ${cls}">${label}</span>`).join('') +
     `<span class="legend-item legend-school">School in session</span>` +
-    `<span class="legend-item drive-parent">Parent driver (gaps = kid can drive)</span>`;
+    `<span class="legend-item legend-driving">Parent must drive to school</span>`;
 }
 
 // Restore saved kids on load

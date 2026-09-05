@@ -99,6 +99,7 @@ button:hover { background: #2559c9; }
 .legend-item.band-3 { background: var(--band-3); }
 .legend-item.band-4 { background: var(--band-4); }
 .legend-school { background: #8a8a8a; }
+.legend-driving { background: #d9534f; }
 
 /* Timeline range items per age band */
 .vis-item.band-0 { background-color: var(--band-0); border-color: var(--band-0); color: #fff; }
@@ -114,12 +115,13 @@ button:hover { background: #2559c9; }
   background-color: var(--school);
 }
 
+/* Background recolor: parent must drive to school (no kid old enough) */
+.vis-item.school-session.parent-driving {
+  background-color: rgba(217, 83, 79, 0.32);
+}
+
 /* Insured-drivers lane */
 .vis-item.insure-item .vis-item-content { font-weight: 700; }
-
-/* Driving lane ranges */
-.vis-item.drive-parent { background-color: #d9534f; border-color: #c9302c; color: #fff; }
-.vis-item.drive-child { background-color: #5cb85c; border-color: #4cae4c; color: #fff; }
 
 /* Kindergarten start point event */
 .vis-item.k-event.vis-point .vis-dot {
