@@ -4,7 +4,8 @@ import 'vis-timeline/styles/vis-timeline-graph2d.css';
 
 // Age band definitions: [startAge, endAge, label, cssClass]
 const AGE_BANDS = [
-  [0, 13, 'Child', 'band-0'],
+  [0, 5, 'Pre-School', 'band-pre'],
+  [5, 13, 'Child - School', 'band-0'],
   [13, 16, 'Teen', 'band-1'],
   [16, 18, 'Driving', 'band-2'],
   [18, 21, 'College', 'band-3'],
@@ -372,15 +373,24 @@ function renderTimeline(kids, parents = []) {
 
     // [from, to, AGE_BANDS index]
     const drivingStart = addYears(kid.dob, 16);
+    const childEnd = addYears(kid.dob, 13);
+    // School starts at Kindergarten (mid-August of the K school year) when the
+    // grade is known, else age 5. Clamp within [birth, age 13].
+    const kStart0 = hasGrade
+      ? new Date(startYear - kid.grade, SCHOOL_START.month, SCHOOL_START.day)
+      : addYears(kid.dob, 5);
+    const kStart = new Date(Math.min(Math.max(+kStart0, +kid.dob), +childEnd));
     const bands = [
-      [addYears(kid.dob, 0), addYears(kid.dob, 13), 0], // Child
-      [addYears(kid.dob, 13), addYears(kid.dob, 16), 1], // Teen
-      [drivingStart, collegeStart > drivingStart ? collegeStart : addYears(kid.dob, 18), 2], // Driving -> college start
-      [collegeStart, collegeEnd, 3], // College
-      [collegeEnd, adultEnd, 4], // Adult
+      [addYears(kid.dob, 0), kStart, 0], // Pre-School
+      [kStart, childEnd, 1], // Child - School
+      [childEnd, addYears(kid.dob, 16), 2], // Teen
+      [drivingStart, collegeStart > drivingStart ? collegeStart : addYears(kid.dob, 18), 3], // Driving -> college start
+      [collegeStart, collegeEnd, 4], // College
+      [collegeEnd, adultEnd, 5], // Adult
     ];
 
     bands.forEach(([start, end, bi]) => {
+      if (+end <= +start) return; // skip empty bands (e.g. no pre-school years)
       const [, , label, cls] = AGE_BANDS[bi];
       if (!minDate || start < minDate) minDate = start;
       if (!maxDate || end > maxDate) maxDate = end;
@@ -406,7 +416,7 @@ function renderTimeline(kids, parents = []) {
         group: gi,
         start: kDate,
         type: 'point',
-        content: `✏️ Starts K ${kYear}`,
+        content: '✏️',
         className: 'k-event',
         title: `${kid.name} starts Kindergarten ~${kDate.toLocaleDateString()}`,
       });
@@ -419,7 +429,7 @@ function renderTimeline(kids, parents = []) {
         group: gi,
         start: gradDate,
         type: 'point',
-        content: `🎓 HS Grad ${gradYear}`,
+        content: '🎓',
         className: 'grad-event',
         title: `${kid.name} graduates high school ~${gradDate.toLocaleDateString()}`,
       });
@@ -472,7 +482,7 @@ function renderTimeline(kids, parents = []) {
   const options = {
     stack: false,
     orientation: 'top',
-    margin: { item: 6, axis: 8 },
+    margin: { item: { horizontal: 0, vertical: 28 }, axis: 14 },
     zoomMin: 1000 * 60 * 60 * 24 * 30, // ~1 month
     start: new Date(),
     end: addYears(new Date(), 6),

@@ -1,4 +1,5 @@
 :root {
+  --band-pre: #bfe0f5;
   --band-0: #4f9dde;
   --band-1: #7bc47f;
   --band-2: #f2c14e;
@@ -93,6 +94,7 @@ button:hover { background: #2559c9; }
   font-size: 0.8rem;
   color: #fff;
 }
+.legend-item.band-pre { background: var(--band-pre); color: #1c3a4a; }
 .legend-item.band-0 { background: var(--band-0); }
 .legend-item.band-1 { background: var(--band-1); }
 .legend-item.band-2 { background: var(--band-2); }
@@ -102,13 +104,23 @@ button:hover { background: #2559c9; }
 .legend-driving { background: #d9534f; }
 
 /* Timeline range items per age band */
+.vis-item.band-pre { background-color: var(--band-pre); border-color: var(--band-pre); color: #1c3a4a; }
 .vis-item.band-0 { background-color: var(--band-0); border-color: var(--band-0); color: #fff; }
 .vis-item.band-1 { background-color: var(--band-1); border-color: var(--band-1); color: #fff; }
 .vis-item.band-2 { background-color: var(--band-2); border-color: var(--band-2); color: #222; }
 .vis-item.band-3 { background-color: var(--band-3); border-color: var(--band-3); color: #fff; }
 .vis-item.band-4 { background-color: var(--band-4); border-color: var(--band-4); color: #fff; }
 
-.vis-item.vis-range { border-radius: 5px; }
+/* Colored bars: fixed height so point markers can line up dead-center on them */
+.vis-item.vis-range {
+  border-width: 0;
+  border-radius: 5px;
+  height: 26px;
+}
+.vis-item.vis-range .vis-item-content {
+  padding: 0 8px;
+  line-height: 26px;
+}
 
 /* School-in-session background highlight */
 .vis-item.school-session {
@@ -123,14 +135,35 @@ button:hover { background: #2559c9; }
 /* Insured-drivers lane */
 .vis-item.insure-item .vis-item-content { font-weight: 700; }
 
-/* Kindergarten start point event */
-.vis-item.k-event.vis-point .vis-dot {
-  border-color: #7bc47f;
-  border-width: 8px;
+/* Point-event markers overlay the band row, vertically centered on it.
+   Content box height matches the bar height so centers coincide. */
+.vis-item.vis-point {
+  background: transparent;
+  border: none;
 }
-.vis-item.k-event .vis-item-content {
-  font-weight: 600;
-  color: #2f6b34;
+.vis-item.vis-point .vis-item-content {
+  display: flex;
+  align-items: center;
+  height: 26px;
+  padding: 0 3px;
+  font-size: 0.72rem;
+}
+.vis-item.vis-point .vis-dot {
+  border-width: 5px;
+}
+
+/* Kindergarten start & graduation: just the emoji, no dot, no label.
+   Date shown on hover/click via the item title. */
+.vis-item.k-event .vis-dot,
+.vis-item.grad-event .vis-dot {
+  display: none;
+}
+.vis-item.k-event .vis-item-content,
+.vis-item.grad-event .vis-item-content {
+  justify-content: center;
+  font-size: 1rem;
+  margin-left: 0;
+  transform: translateX(-50%);
 }
 
 /* Child age at both-parents-retired */
@@ -146,22 +179,13 @@ button:hover { background: #2559c9; }
 /* Retirement point event */
 .vis-item.retire-event.vis-point .vis-dot {
   border-color: #b276d6;
-  border-width: 8px;
+  border-width: 5px;
 }
 .vis-item.retire-event .vis-item-content {
   font-weight: 600;
   color: #6a3d8f;
 }
 
-/* Graduation point event */
-.vis-item.grad-event.vis-point .vis-dot {
-  border-color: #1c1c1e;
-  border-width: 8px;
-}
-.vis-item.grad-event .vis-item-content {
-  font-weight: 600;
-  color: #1c1c1e;
-}
 
 #timeline {
   background: #fff;
@@ -169,19 +193,14 @@ button:hover { background: #2559c9; }
   border-radius: 8px;
 }
 
-/* Swimlane padding */
-.vis-foreground .vis-group,
+/* Row spacing is driven by the timeline `margin` option, not padding, so that
+   absolutely-positioned items stay centered. Just vertically center the labels. */
 .vis-labelset .vis-label {
-  padding-top: 40px;
-  padding-bottom: 40px;
-}
-.vis-labelset .vis-label .vis-inner {
   display: flex;
   align-items: center;
 }
-/* Parent lanes only carry point markers — keep them shorter than kid lanes */
-.vis-foreground .vis-group.lane-parent,
-.vis-labelset .vis-label.lane-parent {
-  padding-top: 10px;
-  padding-bottom: 10px;
+
+/* Parent lanes carry only point markers — keep them a touch shorter */
+.vis-foreground .vis-group.lane-parent .vis-item-content {
+  height: 20px;
 }
