@@ -1,0 +1,179 @@
+:root {
+  --band-0: #4f9dde;
+  --band-1: #7bc47f;
+  --band-2: #f2c14e;
+  --band-3: #ef8354;
+  --band-4: #b276d6;
+  --school: rgba(120, 120, 120, 0.18);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color: #1c1c1e;
+  background: #f7f7f8;
+}
+
+#app {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.title { font-size: 1.6rem; margin: 0 0 20px; }
+
+.hidden { display: none; }
+
+.field, .kid-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+label { font-weight: 600; }
+
+input {
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+input[type='number'] { width: 80px; }
+.kid-name { flex: 1; max-width: 260px; }
+
+button {
+  padding: 9px 16px;
+  border: none;
+  border-radius: 6px;
+  background: #2f6fed;
+  color: #fff;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+button:hover { background: #2559c9; }
+.timeline-actions { display: flex; gap: 10px; margin-top: 16px; }
+.edit { background: #2f6fed; }
+.reset { background: #666; }
+.reset:hover { background: #444; }
+
+.kids-form { margin-top: 16px; }
+
+.grade-hint {
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  background: #eef3ff;
+  border-left: 3px solid #2f6fed;
+  border-radius: 4px;
+  font-size: 0.88rem;
+  color: #33415c;
+}
+.kid-grade { width: 90px; }
+
+.section-label {
+  margin: 18px 0 8px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #33415c;
+}
+
+/* Legend */
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.legend-item {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  color: #fff;
+}
+.legend-item.band-0 { background: var(--band-0); }
+.legend-item.band-1 { background: var(--band-1); }
+.legend-item.band-2 { background: var(--band-2); }
+.legend-item.band-3 { background: var(--band-3); }
+.legend-item.band-4 { background: var(--band-4); }
+.legend-school { background: #8a8a8a; }
+
+/* Timeline range items per age band */
+.vis-item.band-0 { background-color: var(--band-0); border-color: var(--band-0); color: #fff; }
+.vis-item.band-1 { background-color: var(--band-1); border-color: var(--band-1); color: #fff; }
+.vis-item.band-2 { background-color: var(--band-2); border-color: var(--band-2); color: #222; }
+.vis-item.band-3 { background-color: var(--band-3); border-color: var(--band-3); color: #fff; }
+.vis-item.band-4 { background-color: var(--band-4); border-color: var(--band-4); color: #fff; }
+
+.vis-item.vis-range { border-radius: 5px; }
+
+/* School-in-session background highlight */
+.vis-item.school-session {
+  background-color: var(--school);
+}
+
+/* Insured-drivers lane */
+.vis-item.insure-item .vis-item-content { font-weight: 700; }
+
+/* Driving lane ranges */
+.vis-item.drive-parent { background-color: #d9534f; border-color: #c9302c; color: #fff; }
+.vis-item.drive-child { background-color: #5cb85c; border-color: #4cae4c; color: #fff; }
+
+/* Kindergarten start point event */
+.vis-item.k-event.vis-point .vis-dot {
+  border-color: #7bc47f;
+  border-width: 8px;
+}
+.vis-item.k-event .vis-item-content {
+  font-weight: 600;
+  color: #2f6b34;
+}
+
+/* Child age at both-parents-retired */
+.vis-item.retire-age-event.vis-point .vis-dot {
+  border-color: #6a3d8f;
+  border-width: 7px;
+}
+.vis-item.retire-age-event .vis-item-content {
+  font-weight: 700;
+  color: #6a3d8f;
+}
+
+/* Retirement point event */
+.vis-item.retire-event.vis-point .vis-dot {
+  border-color: #b276d6;
+  border-width: 8px;
+}
+.vis-item.retire-event .vis-item-content {
+  font-weight: 600;
+  color: #6a3d8f;
+}
+
+/* Graduation point event */
+.vis-item.grad-event.vis-point .vis-dot {
+  border-color: #1c1c1e;
+  border-width: 8px;
+}
+.vis-item.grad-event .vis-item-content {
+  font-weight: 600;
+  color: #1c1c1e;
+}
+
+#timeline {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+/* Swimlane padding */
+.vis-foreground .vis-group,
+.vis-labelset .vis-label {
+  padding-top: 40px;
+  padding-bottom: 40px;
+}
+.vis-labelset .vis-label .vis-inner {
+  display: flex;
+  align-items: center;
+}

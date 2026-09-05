@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/webstorm-icon-logo.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kid Timeline</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<main id="app">
+  <h1 class="title">Kid Age Timeline</h1>
+
+  <section id="setup" class="setup">
+    <div class="field">
+      <label for="count">How many children?</label>
+      <input id="count" type="number" min="1" max="12" value="2" />
+      <button id="buildForm" type="button">Next</button>
+    </div>
+
+    <form id="kidsForm" class="kids-form hidden">
+      <div id="kidInputs"></div>
+      <button id="render" type="submit">Show Timeline</button>
+    </form>
+  </section>
+
+  <section id="timelineWrap" class="timeline-wrap hidden">
+    <div class="legend" id="legend"></div>
+    <div id="timeline"></div>
+    <div class="timeline-actions">
+      <button id="edit" type="button" class="edit">Edit</button>
+      <button id="reset" type="button" class="reset">Start Over</button>
+    </div>
+  </section>
+</main>
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>
