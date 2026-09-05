@@ -93,6 +93,12 @@ function ageAt(dob, date) {
   return age;
 }
 
+// Grade a child is entering for the given school year, assuming a Sept 1 cutoff
+// (age 5 by Sept 1 => Kindergarten = grade 0).
+function computeGrade(dob, startYear = nearestSchoolYearStart()) {
+  return ageAt(dob, new Date(startYear, 8, 1)) - 5;
+}
+
 // Build the per-parent and per-kid inputs, optionally prefilled
 function buildKidForm(prefill = [], prefillParents = []) {
   const n = Math.max(1, Math.min(12, parseInt(countInput.value, 10) || 1));
@@ -119,7 +125,7 @@ function buildKidForm(prefill = [], prefillParents = []) {
     <p class="section-label">Parents (optional — for retirement markers)</p>
     ${parentRows}
     <p class="section-label">Children</p>
-    <p class="grade-hint">Grade each child is entering for the <strong>${startYear}-${startYear + 1}</strong> school year (starting ${startDateLabel}). Use 0 for Kindergarten, and negative values for kids not yet started (e.g. -1 starts K next year).</p>
+    <p class="grade-hint">Grade each child is entering for the <strong>${startYear}-${startYear + 1}</strong> school year (starting ${startDateLabel}). Use 0 for Kindergarten, and negative values for kids not yet started (e.g. -1 starts K next year). Leave blank to compute it from the birth date (K = age 5 by Sept 1).</p>
   `;
   for (let i = 0; i < n; i++) {
     const k = prefill[i];
@@ -131,7 +137,7 @@ function buildKidForm(prefill = [], prefillParents = []) {
     row.innerHTML = `
       <input type="text" class="kid-name" placeholder="Child ${i + 1} name" value="${name}" required />
       <input type="date" class="kid-dob" value="${dob}" required />
-      <input type="number" class="kid-grade" min="-5" max="12" placeholder="Grade" value="${grade}" required />
+      <input type="number" class="kid-grade" min="-5" max="12" placeholder="Grade (auto)" value="${grade}" />
     `;
     kidInputs.appendChild(row);
   }
@@ -151,12 +157,18 @@ kidsForm.addEventListener('submit', (e) => {
   e.preventDefault();
   const names = [...document.querySelectorAll('.kid-name')].map((el) => el.value.trim());
   const dobs = [...document.querySelectorAll('.kid-dob')].map((el) => el.value);
-  const grades = [...document.querySelectorAll('.kid-grade')].map((el) => parseInt(el.value, 10));
-  const kids = names.map((name, i) => ({
-    name,
-    dob: new Date(dobs[i] + 'T00:00:00'),
-    grade: grades[i],
-  }));
+  const grades = [...document.querySelectorAll('.kid-grade')].map((el) => {
+    const v = parseInt(el.value, 10);
+    return Number.isFinite(v) ? v : null;
+  });
+  const kids = names.map((name, i) => {
+    const dob = new Date(dobs[i] + 'T00:00:00');
+    return {
+      name,
+      dob,
+      grade: grades[i] === null ? computeGrade(dob) : grades[i],
+    };
+  });
 
   const pNames = [...document.querySelectorAll('.parent-name')].map((el) => el.value.trim());
   const pDobs = [...document.querySelectorAll('.parent-dob')].map((el) => el.value);
