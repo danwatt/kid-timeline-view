@@ -43,12 +43,11 @@ const STORAGE_KEY_PARENTS = 'kid-timeline-parents';
 let timeline = null;
 let currentKids = [];
 let currentParents = [];
+let selectedSchoolYear = null;
 
-// Start year of the nearest upcoming school year
-function nearestSchoolYearStart(now = new Date()) {
-  const y = now.getFullYear();
-  const start = new Date(y, SCHOOL_START.month, SCHOOL_START.day);
-  return now <= start ? y : y + 1;
+// Use the school year in session, or the upcoming year during summer.
+function currentSchoolYearStart(now = new Date()) {
+  return schoolYearForDate(now);
 }
 
 function saveKids(kids) {
@@ -113,7 +112,7 @@ function ageAt(dob, date) {
 
 // Grade a child is entering for the given school year, assuming a Sept 1 cutoff
 // (age 5 by Sept 1 => Kindergarten = grade 0).
-function computeGrade(dob, startYear = nearestSchoolYearStart()) {
+function computeGrade(dob, startYear = currentSchoolYearStart()) {
   return ageAt(dob, new Date(startYear, 8, 1)) - 5;
 }
 
@@ -121,7 +120,7 @@ function computeGrade(dob, startYear = nearestSchoolYearStart()) {
 function buildKidForm(prefill = [], prefillParents = []) {
   const n = Math.max(1, Math.min(12, parseInt(countInput.value, 10) || 1));
   countInput.value = n;
-  const startYear = nearestSchoolYearStart();
+  const startYear = currentSchoolYearStart();
   const startDateLabel = new Date(
     startYear,
     SCHOOL_START.month,
@@ -147,10 +146,10 @@ function buildKidForm(prefill = [], prefillParents = []) {
     .join('');
 
   kidInputs.innerHTML = `
-    <div class="section-label">The grown-ups <span>OPTIONAL</span></div><p class="section-description">Add birthdays to see retirement at age 65.</p>
+    <div class="section-label">Parents <span>OPTIONAL</span></div><p class="section-description">Add birthdays to see retirement at age 65.</p>
     ${parentRows}
-    <div class="section-label">The little ones <span>YOUR NEXT CHAPTER</span></div>
-    <details class="grade-help"><summary>About school grades · ${startYear}–${startYear + 1}</summary><p class="grade-hint">Grade each child is entering for the <strong>${startYear}-${startYear + 1}</strong> school year (starting ${startDateLabel}). Use 0 for Kindergarten, and negative values for kids not yet started (e.g. -1 starts K next year). Leave blank to compute it from the birth date (K = age 5 by Sept 1).</p></details>
+    <div class="section-label">Children <span>BIRTHDAYS &amp; GRADES</span></div>
+    <details class="grade-help"><summary>About school grades · ${startYear}–${startYear + 1}</summary><p class="grade-hint">Grade each child is in (or entering) for the <strong>${startYear}-${startYear + 1}</strong> school year (starting ${startDateLabel}). Use 0 for Kindergarten, and negative values for kids not yet started (e.g. -1 starts K next year). Leave blank to compute it from the birth date (K = age 5 by Sept 1).</p></details>
   `;
   for (let i = 0; i < n; i++) {
     const k = prefill[i];
@@ -430,7 +429,7 @@ function renderTimeline(kids, parents = []) {
   let minDate = null;
   let maxDate = null;
 
-  const startYear = nearestSchoolYearStart();
+  const startYear = currentSchoolYearStart();
   const driveData = [];
 
   // Adult band for all kids runs until the youngest child turns 25
@@ -601,7 +600,7 @@ function renderTimeline(kids, parents = []) {
   timeline = new Timeline(container, items, groups, options);
 
   document.getElementById('familySummary').textContent =
-    `${kids.length} ${kids.length === 1 ? 'child' : 'children'} · ${parents.length} ${parents.length === 1 ? 'parent' : 'parents'} · A lifetime of possibilities.`;
+    `${kids.length} ${kids.length === 1 ? 'child' : 'children'} · Grades, school passengers, and driving at 16.`;
   buildLegend();
   const yearSelect = document.getElementById('schoolYearSelect');
   const firstYear = Math.min(new Date(dataMin).getFullYear(), startYear);
@@ -680,7 +679,13 @@ function showSchoolYear(year) {
     select.add(new Option(`${year}–${year + 1}`, String(year)));
   }
   select.value = String(year);
-  const rows = schoolYearDetails(currentKids, year, nearestSchoolYearStart());
+  selectedSchoolYear = year;
+  const years = [...select.options].map((option) => Number(option.value));
+  document.getElementById('previousSchoolYear').disabled =
+    year <= Math.min(...years);
+  document.getElementById('nextSchoolYear').disabled =
+    year >= Math.max(...years);
+  const rows = schoolYearDetails(currentKids, year, currentSchoolYearStart());
   const drivers = rows.filter((kid) => kid.enrolled && kid.driver).length;
   const passengers = rows.filter((kid) => kid.enrolled && !kid.driver).length;
   const dateLabel = (date) =>
@@ -705,6 +710,7 @@ document
   .getElementById('schoolYearSelect')
   .addEventListener('change', (event) => {
     showSchoolYear(Number(event.target.value));
+    keepSchoolYearVisible();
   });
 
 const schoolYearModal = document.getElementById('schoolYearModal');
@@ -723,3 +729,32 @@ schoolYearModal.addEventListener('click', (event) => {
     schoolYearModal.close();
   }
 });
+
+function stepSchoolYear(direction) {
+  showSchoolYear(selectedSchoolYear + direction);
+  keepSchoolYearVisible();
+}
+
+function keepSchoolYearVisible() {
+  const { start, end } = timeline.getWindow();
+  const yearStart = new Date(
+    selectedSchoolYear,
+    SCHOOL_START.month,
+    SCHOOL_START.day,
+  );
+  const yearEnd = new Date(
+    selectedSchoolYear + 1,
+    SCHOOL_END.month,
+    SCHOOL_END.day,
+  );
+  if (yearStart < start || yearEnd > end) {
+    timeline.moveTo(new Date((+yearStart + +yearEnd) / 2));
+  }
+}
+
+document
+  .getElementById('previousSchoolYear')
+  .addEventListener('click', () => stepSchoolYear(-1));
+document
+  .getElementById('nextSchoolYear')
+  .addEventListener('click', () => stepSchoolYear(1));

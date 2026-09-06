@@ -1146,7 +1146,7 @@ button:hover {
   font-size: 10px;
   color: var(--muted);
 }
-.school-year-picker select {
+.school-year-navigation select {
   font: inherit;
   font-size: 13px;
   padding: 10px;
@@ -1155,7 +1155,7 @@ button:hover {
   background: var(--paper);
   color: var(--ink);
 }
-.school-year-picker select:focus-visible {
+.school-year-navigation select:focus-visible {
   outline: 3px solid var(--accent);
   outline-offset: 2px;
 }
@@ -1267,4 +1267,28 @@ body:has(#schoolYearModal[open]) {
   .view-controls {
     flex-wrap: wrap;
   }
+}
+
+.timeline-caption {
+  flex-wrap: wrap;
+}
+.school-year-navigation {
+  flex-shrink: 0;
+}
+.school-year-navigation-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+}
+.school-year-navigation-controls button {
+  width: 34px;
+  height: 38px;
+  padding: 0;
+  font-size: 17px;
+}
+.school-year-navigation-controls button:disabled {
+  opacity: 0.35;
+  cursor: default;
+  transform: none;
 }

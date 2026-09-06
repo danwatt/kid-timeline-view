@@ -1,7 +1,7 @@
 // The timeline assumes driving eligibility at 16; it does not track actual licences.
 export function schoolYearForDate(date) {
   const year = date.getFullYear();
-  // Summer clicks select the upcoming school year.
+  // After the mid-May school-year end, use the upcoming school year.
   return date >= new Date(year, 4, 15) ? year : year - 1;
 }
 

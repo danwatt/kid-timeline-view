@@ -65,3 +65,11 @@ test('missing grades use September 1 kindergarten cutoff', () => {
     ['Kindergarten', 'Pre-school'],
   );
 });
+
+test('entry year stays current in September and March, advances in June', () => {
+  assert.equal(schoolYearForDate(new Date(2026, 8, 15)), 2026);
+  assert.equal(schoolYearForDate(new Date(2027, 2, 15)), 2026);
+  assert.equal(schoolYearForDate(new Date(2027, 5, 15)), 2027);
+  assert.equal(schoolYearForDate(new Date(2027, 4, 14)), 2026);
+  assert.equal(schoolYearForDate(new Date(2027, 4, 15)), 2027);
+});
