@@ -1,38 +1,239 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="/webstorm-icon-logo.svg" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kid Timeline</title>
-  <link rel="stylesheet" href="/style.css">
-</head>
-<body>
-<main id="app">
-  <h1 class="title">Kid Age Timeline</h1>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f7f5ef" />
+    <meta
+      name="description"
+      content="See your family's growing years together. A thoughtful timeline for school days, big milestones, and everything ahead."
+    />
+    <title>Little Years · Your family, in perspective</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <main id="app">
+      <header class="site-header">
+        <a class="brand" href="./" aria-label="Little Years home"
+          ><span class="brand-mark" aria-hidden="true"
+            ><i></i><i></i><i></i></span
+          >little years<span class="brand-period">.</span></a
+        >
+        <span class="header-note">A little perspective on growing up.</span>
+        <span class="privacy-badge"><span></span> Saved on this device</span>
+      </header>
 
-  <section id="setup" class="setup">
-    <div class="field">
-      <label for="count">How many children?</label>
-      <input id="count" type="number" min="1" max="12" value="2" />
-      <button id="buildForm" type="button">Next</button>
-    </div>
+      <section id="setup" class="setup">
+        <div class="intro">
+          <div class="eyebrow">
+            <span></span> THE BIG PICTURE, FOR YOUR LITTLE PEOPLE
+          </div>
+          <h1>They grow up fast.<br /><em>See it all together.</em></h1>
+          <p>
+            From the first day of school to the next big adventure.<br
+              class="desktop-break"
+            />
+            Make a little room for the years ahead.
+          </p>
+        </div>
+        <div class="setup-grid">
+          <div class="family-card">
+            <div class="card-heading">
+              <div>
+                <span class="eyebrow">START WITH YOUR PEOPLE</span>
+                <h2>Meet your family</h2>
+              </div>
+              <span class="step-pill">01 / 02</span>
+            </div>
+            <div class="field count-field">
+              <label for="count"
+                >How many children?<span
+                  >Your timeline has room for everyone.</span
+                ></label
+              >
+              <div class="count-controls">
+                <input
+                  id="count"
+                  type="number"
+                  min="1"
+                  max="12"
+                  value="2"
+                /><button id="buildForm" type="button" class="button-secondary">
+                  Update
+                </button>
+              </div>
+            </div>
+            <form id="kidsForm" class="kids-form hidden">
+              <div id="kidInputs"></div>
+              <div class="form-footer">
+                <button id="render" type="submit">
+                  Create your timeline <span aria-hidden="true">↗</span>
+                </button>
+                <p>Just your family. Stored in your browser.</p>
+              </div>
+            </form>
+          </div>
+          <aside class="preview-column">
+            <div class="preview-card">
+              <div class="preview-top">
+                <span class="eyebrow">ONE FAMILY. SO MANY CHAPTERS.</span
+                ><span class="sparkle" aria-hidden="true">✳</span>
+              </div>
+              <h2>Small moments.<br />A whole life ahead.</h2>
+              <p>
+                Different ages. Shared adventures.<br />One beautiful,
+                overlapping story.
+              </p>
+              <div
+                class="mini-timeline"
+                aria-label="Illustrative family timeline"
+              >
+                <div class="mini-years">
+                  <span>2025</span><span>2030</span><span>2035</span
+                  ><span>2040</span>
+                </div>
+                <div class="mini-row">
+                  <span>Alex</span>
+                  <div class="mini-track">
+                    <i class="mini-school">School days</i
+                    ><i class="mini-teen">Teen</i
+                    ><i class="mini-college">College</i>
+                  </div>
+                </div>
+                <div class="mini-row">
+                  <span>Jamie</span>
+                  <div class="mini-track second">
+                    <i class="mini-pre">Little years</i
+                    ><i class="mini-school">School days</i
+                    ><i class="mini-teen">Teen</i>
+                  </div>
+                </div>
+                <div class="mini-today"><span>You are here</span></div>
+              </div>
+              <div class="preview-caption">
+                <span class="example-dot"></span> A glimpse of what’s ahead
+                <span>ILLUSTRATION</span>
+              </div>
+            </div>
+            <div class="features">
+              <div>
+                <span class="feature-icon">↗</span>
+                <div>
+                  <h3>Every chapter, connected</h3>
+                  <p>School, driving, college, and adulthood—side by side.</p>
+                </div>
+              </div>
+              <div>
+                <span class="feature-icon">◎</span>
+                <div>
+                  <h3>Plan with a little perspective</h3>
+                  <p>
+                    See the school runs, insured drivers, and retirement years.
+                  </p>
+                </div>
+              </div>
+              <div>
+                <span class="feature-icon">↔</span>
+                <div>
+                  <h3>The big picture. The little details.</h3>
+                  <p>Zoom into a season or step back to see it all.</p>
+                </div>
+              </div>
+            </div>
+            <p class="aside-note">The days are long. The years are little.</p>
+          </aside>
+        </div>
+      </section>
 
-    <form id="kidsForm" class="kids-form hidden">
-      <div id="kidInputs"></div>
-      <button id="render" type="submit">Show Timeline</button>
-    </form>
-  </section>
-
-  <section id="timelineWrap" class="timeline-wrap hidden">
-    <div class="legend" id="legend"></div>
-    <div id="timeline"></div>
-    <div class="timeline-actions">
-      <button id="edit" type="button" class="edit">Edit</button>
-      <button id="reset" type="button" class="reset">Start Over</button>
-    </div>
-  </section>
-</main>
-<script type="module" src="/src/main.js"></script>
-</body>
+      <section id="timelineWrap" class="timeline-wrap hidden">
+        <div class="timeline-heading">
+          <div>
+            <div class="eyebrow"><span></span> YOUR FAMILY, IN PERSPECTIVE</div>
+            <h1>All your years.<br /><em>One shared story.</em></h1>
+            <p id="familySummary"></p>
+          </div>
+          <button id="edit" type="button" class="button-secondary">
+            Edit family <span aria-hidden="true">↗</span>
+          </button>
+        </div>
+        <div class="timeline-card">
+          <div class="timeline-toolbar">
+            <div>
+              <h2>Your family timeline</h2>
+              <p>Every stage, side by side.</p>
+            </div>
+            <div class="view-controls">
+              <button
+                id="openSchoolYear"
+                class="button-secondary"
+                type="button"
+                aria-haspopup="dialog"
+              >
+                School year
+              </button>
+              <button id="today" class="button-secondary" type="button">
+                Today</button
+              ><button id="fit" class="button-secondary" type="button">
+                Fit all
+              </button>
+              <div class="zoom-controls">
+                <button id="zoomOut" type="button" aria-label="Zoom out">
+                  −</button
+                ><button id="zoomIn" type="button" aria-label="Zoom in">
+                  +
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="legend" id="legend"></div>
+          <div id="timeline"></div>
+          <div class="timeline-caption">
+            <span
+              >↔ Drag to explore · Scroll to zoom · Click for school-year
+              details</span
+            ><span><i></i> Today</span>
+          </div>
+        </div>
+        <dialog
+          id="schoolYearModal"
+          class="school-year-card"
+          aria-labelledby="schoolYearTitle"
+        >
+          <form method="dialog" class="modal-close-form">
+            <button
+              class="modal-close button-secondary"
+              aria-label="Close school-year breakdown"
+            >
+              ✕
+            </button>
+          </form>
+          <div class="school-year-heading">
+            <div>
+              <span class="eyebrow">THE SCHOOL RUN</span>
+              <h2 id="schoolYearTitle">A closer look at the school year</h2>
+            </div>
+            <label class="school-year-picker"
+              >School year<select id="schoolYearSelect"></select
+            ></label>
+          </div>
+          <p class="school-year-help">
+            Click a year on the timeline or choose one here. Summer clicks show
+            the upcoming school year.
+          </p>
+          <div id="schoolYearDetails" aria-live="polite"></div>
+        </dialog>
+        <div class="timeline-bottom">
+          <p>✦ A little perspective makes the future feel closer.</p>
+          <button id="reset" type="button" class="reset">Start over</button>
+        </div>
+      </section>
+      <footer class="site-footer">
+        <span>little years<span class="brand-period">.</span></span>
+        <p>Made for the years that matter.</p>
+        <span>A FAMILY TIMELINE</span>
+      </footer>
+    </main>
+    <script type="module" src="/src/main.js"></script>
+  </body>
 </html>
